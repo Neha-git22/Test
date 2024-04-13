@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <types>
+        <members>Account.Acc_Activation_Summary__c</members>
+        <members>Account.Comp_Email__c</members>
+        <members>Account.Active_Bool__c</members>
+        <name>CustomField</name>
+    </types>
+    <types>
+        <members>Account_Manager</members>
+        <name>PermissionSet</name>
+    </types>
+    <types>
+        <members>Account.Activation</members>
+        <name>QuickAction</name>
+    </types>
+    <types>
+        <members>Account_Trigger</members>
+        <name>ApexTrigger</name>
+    </types>
+    <types>
+        <members>Account_Handler</members>
+        <members>Test_Accounttrigger</members>
+        <name>ApexClass</name>
+    </types>
+    <types>
+        <members>Account_Record_Page</members>
+        <name>FlexiPage</name>
+    </types>
+    <types>
+        <members>Account</members>
+        <name>CustomObject</name>
+    </types>
+    <types>
+        <members>Account-New Cust Layout</members>
+        <name>Layout</name>
+    </types>
+    <types>
+        <members>Admin</members>
+        <members>Standard</members>
+        <members>StandardAul</members>
+        <name>Profile</name>
+    </types>
+    <version>58.0</version>
+</Package>
+
