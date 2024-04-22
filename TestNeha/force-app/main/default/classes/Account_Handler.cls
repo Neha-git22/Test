@@ -1,24 +1,21 @@
-public class Account_Handler {
-    //this code was initially written for activation Summary validation. but later understood to handle it in the ui button
-   /* public static void Handlebefore(List<Account> accL){
-        for(Account A:accL){
-            if(A.Active_Bool__c==true){
-                if(A.Acc_Activation_Summary__c==null){
-                    A.Acc_Activation_Summary__c.addError('Please complete this field for account activation!');
-                }
-            }
-        }
-        
-    }*/
-    
+public class Account_Handler { 
     public static void Handleafter(List<Account> NaccL,List<Account> OaccL){
         List<Contact> InsconL = new List<Contact>();
         
         //Set to store accIds coming from trigger.new
         Set<Id> accountIds = new Set<Id>();
         
-        for(Account A : NaccL){
-            accountIds.add(A.Id);
+        if(NaccL!=null){
+            for(Account A : NaccL){
+                if((A.Type == 'Customer - Direct' || A.Type == 'Customer - Channel') && A.Active_Bool__c==true)
+                    accountIds.add(A.Id);
+            }
+        }
+        if(OaccL!=null){
+            for(Account A : OaccL){
+                if((A.Type == 'Customer - Direct' || A.Type == 'Customer - Channel') && A.Active_Bool__c==true)
+                    accountIds.add(A.Id);
+            }
         }
         
         List<Contact> RelCons=[SELECT Id, AccountId FROM Contact WHERE AccountId IN :accountIds];
@@ -30,10 +27,8 @@ public class Account_Handler {
         }
         
         for(Account A : NaccL){
-            if(A.Type == 'Customer - Direct'  && A.Acc_Activation_Summary__c != null){
-                
+            if((A.Type == 'Customer - Direct' || A.Type == 'Customer - Channel')  && A.Active_Bool__c==true){
                 if(!AccConMap.containsKey(A.Id)){
-                    
                     Contact con = new Contact();
                         con.FirstName = A.Name;
                         con.LastName = 'Customer Representative';
