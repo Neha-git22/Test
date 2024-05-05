@@ -1,42 +1,36 @@
 public class Account_Handler { 
-    public static void Handleafter(List<Account> NaccL,List<Account> OaccL){
+    public static void Handleafter(Map<Id,Account> NaccM,Map<Id,Account> OaccM){
         List<Contact> InsconL = new List<Contact>();
         
-        //Set to store accIds coming from trigger.new
+        //Set to store accIds coming from trigger.newMap
         Set<Id> accountIds = new Set<Id>();
-        
-        if(NaccL!=null){
-            for(Account A : NaccL){
-                if((A.Type == 'Customer - Direct' || A.Type == 'Customer - Channel') && A.Active_Bool__c==true)
-                    accountIds.add(A.Id);
-            }
+        List<Contact> RelCons=[SELECT Id, AccountId FROM Contact WHERE AccountId IN :NaccM.keyset()];
+        for(Contact C:RelCons){
+            accountIds.add(C.AccountId);
         }
-        if(OaccL!=null){
-            for(Account A : OaccL){
-                if((A.Type == 'Customer - Direct' || A.Type == 'Customer - Channel') && A.Active_Bool__c==true)
-                    accountIds.add(A.Id);
-            }
-        }
-        
-        List<Contact> RelCons=[SELECT Id, AccountId FROM Contact WHERE AccountId IN :accountIds];
-        
+     
         //Storing ConIds corresponding to New Accounts 
-        Map<Id, Id> AccConMap = new Map<Id, Id>();
-        for(Contact C :RelCons ){
-            AccConMap.put(C.AccountId, C.Id);
-        }
+
         
-        for(Account A : NaccL){
-            if((A.Type == 'Customer - Direct' || A.Type == 'Customer - Channel')  && A.Active_Bool__c==true){
-                if(!AccConMap.containsKey(A.Id)){
-                    Contact con = new Contact();
-                        con.FirstName = A.Name;
-                        con.LastName = 'Customer Representative';
-                        con.AccountId = A.Id;
-                        con.Email=A.Comp_Email__c;
-                        con.Phone=A.Phone;
-                    
-                    InsconL.add(con);
+        for(Id key : NaccM.keyset()){
+            Account AccOld=new Account();
+            if(OaccM!=null){
+                 AccOld=OaccM.get(key);
+            }
+            else{ 
+                AccOld=null;
+            }
+                
+            if (NaccM.get(key).Type.contains('Customer') && NaccM.get(key).Active_Bool__c && (AccOld == null || !AccOld.Active_Bool__c)) {
+                if (!accountIds.contains(key)) {
+                    InsconL.add(new Contact(
+                        FirstName = NaccM.get(key).Name,
+                        LastName = 'Customer Representative',
+                        Phone = NaccM.get(key).Phone,
+                        Email = NaccM.get(key).Comp_Email__c,
+                        AccountId = key
+                    ));
+                    accountIds.add(key); 
                 }
             }
         }
@@ -45,4 +39,5 @@ public class Account_Handler {
             insert InsconL;
         }     
     }
-}
+   }
+
